@@ -1,0 +1,35 @@
+/:
+  Controller: "Main"
+  Action: "home"
+
+/login:
+  Controller: "Security"
+  Action: "login"
+
+/register:
+  Controller: "Security"
+  Action: "register"
+
+/logout:
+  Controller: "Security"
+  Action: "logout"
+
+/insertUser:
+  Controller: "UserController"
+  Action: "insertUser"
+
+/getUserByEmail/{mail}:
+  Controller: "UserController"
+  Action: "getUserByEmail"
+
+/deleteUserById/{id}:
+  Controller: "UserController"
+  Action: "deleteUserById"
+
+/modifyUser/{id}:
+  Controller: "UserController"
+  Action: "modifyUser"
+
+/affichage:
+  Controller: "UserController"
+  Action: "affichage"
