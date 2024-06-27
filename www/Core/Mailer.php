@@ -1,14 +1,17 @@
 <?php
 
+require_once '/path/to/vendor/autoload.php'; // Replace with the actual path to autoload.php
+
+use Swift_SmtpTransport;
+use Swift_Mailer;
+use Swift_Message;
+
 function sendConfirmationEmail($email, $token) {
     $to = $email;
     $subject = 'Confirmation d\'inscription';
     $message = 'Click <a href="http://example.com/views/public/confirm.php?token=' . $token . '">here</a> to confirm your registration';
-    $headers = "MIME-Version: 1.0" . "\r\n";
-    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= 'From: <from@example.com>' . "\r\n";
-
-    // Mailtrap SMTP configuration
+    
+    // Mailtrap SMTP configuration (replace with your actual SMTP details)
     $transport = (new Swift_SmtpTransport('smtp.mailtrap.io', 587))
         ->setUsername('cedde7689c818e')
         ->setPassword('ff222783924cbf');
@@ -32,11 +35,8 @@ function sendResetEmail($email, $token) {
     $to = $email;
     $subject = 'Password Reset';
     $message = 'Click <a href="http://example.com/views/public/reset_password.php?token=' . $token . '">here</a> to reset your password';
-    $headers = "MIME-Version: 1.0" . "\r\n";
-    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= 'From: <from@example.com>' . "\r\n";
 
-    // Mailtrap SMTP configuration
+    // Mailtrap SMTP configuration (replace with your actual SMTP details)
     $transport = (new Swift_SmtpTransport('smtp.mailtrap.io', 587))
         ->setUsername('cedde7689c818e')
         ->setPassword('ff222783924cbf');
@@ -55,3 +55,11 @@ function sendResetEmail($email, $token) {
         echo 'Failed to send reset email';
     }
 }
+
+// Example usage:
+$email = 'recipient@example.com';
+$token = 'your_generated_token';
+
+// Uncomment one of the following lines to test sending a confirmation or reset email
+ sendConfirmationEmail($email, $token);
+ sendResetEmail($email, $token);

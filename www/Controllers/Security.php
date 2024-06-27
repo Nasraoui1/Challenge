@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Core\Form;
 use App\Core\View;
-use App\Models\User;
+use App\Models\Users;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -20,7 +20,7 @@ class Security {
             $password = $_POST['password'];
             
             // Find user by email
-            $user = (new User())->findByEmail($email);
+            $user = (new Users())->findByEmail($email);
 
             if ($user && password_verify($password, $user->getPassword())) {
                 // Start session
@@ -44,28 +44,60 @@ class Security {
 
     public function register(): void {
         $form = new Form("Register");
+        $errors = [];
+    
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = new User();
-            $user->setFirstname($_POST["firstname"]);
-            $user->setLastname($_POST["lastname"]);
-            $user->setEmail($_POST["email"]);
-            $user->setPassword(password_hash($_POST["password"], PASSWORD_DEFAULT));
-
-            // Generate a token
-            $token = bin2hex(random_bytes(50));
-            $user->setToken($token);
-            $user->save();
-
-            // Send confirmation email
-            $this->sendConfirmationEmail($user->getEmail(), $token);
-            echo "Registration successful! Please check your email to confirm your account.";
+            $username = $_POST["username"] ?? '';
+            $email = $_POST["email"] ?? '';
+            $password = $_POST["password"] ?? '';
+            $dateOfBirth = $_POST["date_of_birth"] ?? '';
+            $address = $_POST["address"] ?? '';
+            $phone = $_POST["phone"] ?? '';
+    
+            // Check if required fields are empty
+            if (empty($username)) {
+                $errors[] = "Username is required.";
+            }
+            if (empty($email)) {
+                $errors[] = "Email is required.";
+            }
+            if (empty($password)) {
+                $errors[] = "Password is required.";
+            }
+            if (empty($dateOfBirth)) {
+                $errors[] = "Date of birth is required.";
+            }
+            if (empty($address)) {
+                $errors[] = "Address is required.";
+            }
+            if (empty($phone)) {
+                $errors[] = "Phone number is required.";
+            }
+    
+            if (empty($errors)) {
+                $user = new Users();
+                $user->setUsername($username);
+                $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
+                $user->setEmail($email);
+                $user->setToken(bin2hex(random_bytes(50)));
+                $user->setIsVerified(false);
+                $user->setDateOfBirth($dateOfBirth);
+                $user->setAddress($address);
+                $user->setPhone($phone);
+                $user->save();
+    
+                // Send confirmation email
+                $this->sendConfirmationEmail($user->getEmail(), $user->getToken());
+                echo "Registration successful! Please check your email to confirm your account.";
+            }
         }
-
+    
         $view = new View("Security/register");
         $view->assign("form", $form->build());
+        $view->assign("errors", $errors); // Pass errors to the view
         $view->render();
     }
-
+    
     public function confirmEmail(): void {
         $token = $_GET['token'] ?? '';
         if (empty($token)) {
@@ -73,7 +105,7 @@ class Security {
             return;
         }
 
-        $user = (new User())->findByToken($token);
+        $user = (new Users())->findByToken($token);
 
         if ($user) {
             $user->setIsVerified(true);
@@ -89,10 +121,9 @@ class Security {
         $form = new Form("ForgotPassword");
         if ($form->isSubmitted() && $form->isValid()) {
             $email = $_POST["email"];
-            $user = (new User())->findByEmail($email);
+            $user = (new Users())->findByEmail($email);
 
             if ($user) {
-                // Generate a token
                 $token = bin2hex(random_bytes(50));
                 $user->setToken($token);
                 $user->save();
@@ -115,7 +146,7 @@ class Security {
             $token = $_POST['token'];
             $new_password = $_POST['new_password'];
 
-            $user = (new User())->findByToken($token);
+            $user = (new Users())->findByToken($token);
 
             if ($user) {
                 $user->setPassword(password_hash($new_password, PASSWORD_DEFAULT));
@@ -139,7 +170,11 @@ class Security {
     }
 
     public function logout(): void {
-        echo "Se déconnecter";
+        session_start();
+        session_unset();
+        session_destroy();
+        header("Location: /");
+        exit();
     }
 
     private function sendConfirmationEmail($email, $token) {
@@ -155,22 +190,31 @@ class Security {
         try {
             // Server settings
             $mail->isSMTP();
-            $mail->Host       = 'smtp.mailtrap.io';
+            $mail->Host       = 'sandbox.smtp.mailtrap.io';
             $mail->SMTPAuth   = true;
             $mail->Username   = 'cedde7689c818e'; // Mailtrap username
             $mail->Password   = 'ff222783924cbf'; // Mailtrap password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
-
+    
+            // Disable SSL verification (temporary)
+            $mail->SMTPOptions = [
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                ],
+            ];
+    
             // Recipients
             $mail->setFrom('from@example.com', 'Mailer');
             $mail->addAddress($to);
-
+    
             // Content
             $mail->isHTML(true);
             $mail->Subject = $subject;
             $mail->Body    = $body;
-
+    
             $mail->send();
             echo 'Message has been sent';
         } catch (Exception $e) {

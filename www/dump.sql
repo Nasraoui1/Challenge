@@ -1,64 +1,130 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Hôte : mariadb
--- Généré le : mar. 14 mai 2024 à 13:07
--- Version du serveur : 11.3.2-MariaDB-1:11.3.2+maria~ubu2204
--- Version de PHP : 8.2.18
+-- Table Users
+CREATE TABLE IF NOT EXISTS chall_users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    reset_token VARCHAR(255),
+    is_verified BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
+-- Table UserProfiles
+CREATE TABLE IF NOT EXISTS chall_userProfiles (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    date_of_birth DATE,
+    address VARCHAR(255),
+    phone VARCHAR(20),
+    FOREIGN KEY (user_id) REFERENCES chall_users(id) ON DELETE CASCADE
+);
 
+-- Table Categories
+CREATE TABLE IF NOT EXISTS chall_categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT
+);
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+-- Table Tags
+CREATE TABLE IF NOT EXISTS chall_tags (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
 
---
--- Base de données : `esgi`
---
+-- Table Articles
+CREATE TABLE IF NOT EXISTS chall_articles (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    published_at TIMESTAMP,
+    author_id INT NOT NULL,
+    status VARCHAR(50) CHECK (status IN ('draft', 'published')) DEFAULT 'draft',
+    FOREIGN KEY (author_id) REFERENCES chall_users(id) ON DELETE SET NULL
+);
 
--- --------------------------------------------------------
+-- Table Comments
+CREATE TABLE IF NOT EXISTS chall_comments (
+    id SERIAL PRIMARY KEY,
+    content TEXT NOT NULL,
+    published_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    author_id INT NOT NULL,
+    article_id INT NOT NULL,
+    FOREIGN KEY (author_id) REFERENCES chall_users(id) ON DELETE CASCADE,
+    FOREIGN KEY (article_id) REFERENCES chall_articles(id) ON DELETE CASCADE
+);
 
---
--- Structure de la table `esgi_user`
---
+-- Table Articles_Categories
+CREATE TABLE IF NOT EXISTS chall_articles_categories (
+    article_id INT NOT NULL,
+    category_id INT NOT NULL,
+    PRIMARY KEY (article_id, category_id),
+    FOREIGN KEY (article_id) REFERENCES chall_articles(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES chall_categories(id) ON DELETE CASCADE
+);
 
-CREATE TABLE `esgi_user` (
-                             `id` int(11) NOT NULL,
-                             `firstname` varchar(50) NOT NULL,
-                             `lastname` varchar(50) NOT NULL,
-                             `email` varchar(320) NOT NULL,
-                             `password` varchar(255) NOT NULL,
-                             `status` tinyint(4) NOT NULL,
-                             `date_inserted` timestamp NOT NULL DEFAULT current_timestamp(),
-                             `date_updated` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- Table Articles_Tags
+CREATE TABLE IF NOT EXISTS chall_articles_tags (
+    article_id INT NOT NULL,
+    tag_id INT NOT NULL,
+    PRIMARY KEY (article_id, tag_id),
+    FOREIGN KEY (article_id) REFERENCES chall_articles(id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES chall_tags(id) ON DELETE CASCADE
+);
 
---
--- Index pour les tables déchargées
---
+-- Table Media
+CREATE TABLE IF NOT EXISTS chall_media (
+    id SERIAL PRIMARY KEY,
+    file_name VARCHAR(255) NOT NULL,
+    file_type VARCHAR(50),
+    url VARCHAR(255) NOT NULL,
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES chall_users(id) ON DELETE SET NULL
+);
 
---
--- Index pour la table `esgi_user`
---
-ALTER TABLE `esgi_user`
-    ADD PRIMARY KEY (`id`);
+-- Table Pages
+CREATE TABLE IF NOT EXISTS chall_pages (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    published_at TIMESTAMP,
+    author_id INT NOT NULL,
+    FOREIGN KEY (author_id) REFERENCES chall_users(id) ON DELETE SET NULL
+);
 
---
--- AUTO_INCREMENT pour les tables déchargées
---
+-- Table ContactMessages
+CREATE TABLE IF NOT EXISTS chall_contactMessages (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    subject VARCHAR(255),
+    message TEXT NOT NULL,
+    received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
---
--- AUTO_INCREMENT pour la table `esgi_user`
---
-ALTER TABLE `esgi_user`
-    MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-COMMIT;
+-- Table Settings
+CREATE TABLE IF NOT EXISTS chall_settings (
+    id SERIAL PRIMARY KEY,
+    setting_name VARCHAR(255) NOT NULL,
+    setting_value TEXT NOT NULL
+);
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+-- Table ActivityLog
+CREATE TABLE IF NOT EXISTS chall_activityLog (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    action VARCHAR(255) NOT NULL,
+    action_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    description TEXT,
+    FOREIGN KEY (user_id) REFERENCES chall_users(id) ON DELETE CASCADE
+);
+
+-- Table Image
+CREATE TABLE IF NOT EXISTS chall_image (
+    id_image SERIAL PRIMARY KEY,
+    chemin_image VARCHAR(255)
+);

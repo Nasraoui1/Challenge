@@ -17,19 +17,32 @@
 /insertUser:
   Controller: "UserController"
   Action: "insertUser"
+  Role: ["ADMIN"]
 
 /getUserByEmail/{mail}:
   Controller: "UserController"
   Action: "getUserByEmail"
+  Role: ["ADMIN"]
 
 /deleteUserById/{id}:
   Controller: "UserController"
   Action: "deleteUserById"
+  Role: ["ADMIN"]
 
 /modifyUser/{id}:
   Controller: "UserController"
   Action: "modifyUser"
+  Role: ["ADMIN"]
 
 /affichage:
   Controller: "UserController"
   Action: "affichage"
+  Role: ["ADMIN"]
+
+/forget_password:
+  Controller: "Security"
+  Action: "forgotpassword"
+
+/dashboard:
+  Controller: "Main"
+  Action: "dashboard"

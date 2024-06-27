@@ -2,9 +2,6 @@
 
 namespace App;
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
-
-use App\Controllers\Security;
 //Notre Autoloader
 spl_autoload_register("App\myAutoloader");
 
@@ -82,10 +79,6 @@ if( !method_exists($controller, $action) ){
     die("Le methode ".$action." n'existe pas dans le controller ".$controller);
 }
 $objetController->$action();
-
-define('BASE_DIR', dirname(__DIR__));
-
-
 
 
 
