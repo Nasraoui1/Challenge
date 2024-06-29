@@ -1,25 +1,17 @@
--- Table Users
+-- Table users
 CREATE TABLE IF NOT EXISTS chall_users (
     id SERIAL PRIMARY KEY,
-    username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     token VARCHAR(255) NOT NULL,
     reset_token VARCHAR(255),
     is_verified BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Table UserProfiles
-CREATE TABLE IF NOT EXISTS chall_userProfiles (
-    id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     first_name VARCHAR(255),
     last_name VARCHAR(255),
-    date_of_birth DATE,
+    birthdate DATE,
     address VARCHAR(255),
-    phone VARCHAR(20),
-    FOREIGN KEY (user_id) REFERENCES chall_users(id) ON DELETE CASCADE
+    phone VARCHAR(20)
 );
 
 -- Table Categories

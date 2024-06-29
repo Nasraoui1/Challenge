@@ -8,7 +8,7 @@ use App\Models\Users;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require_once dirname(__DIR__) . '/vendor/autoload.php'; 
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 class Security {
     public function login(): void {
@@ -47,16 +47,21 @@ class Security {
         $errors = [];
     
         if ($form->isSubmitted() && $form->isValid()) {
-            $username = $_POST["username"] ?? '';
+            $firstname = $_POST["firstname"] ?? '';
+            $lastname = $_POST["lastname"] ?? '';
             $email = $_POST["email"] ?? '';
             $password = $_POST["password"] ?? '';
-            $dateOfBirth = $_POST["date_of_birth"] ?? '';
+            $confirm_password = $_POST["confirm_password"] ?? '';
+            $birthdate = $_POST["birthdate"] ?? '';
             $address = $_POST["address"] ?? '';
             $phone = $_POST["phone"] ?? '';
     
             // Check if required fields are empty
-            if (empty($username)) {
-                $errors[] = "Username is required.";
+            if (empty($firstname)) {
+                $errors[] = "First name is required.";
+            }
+            if (empty($lastname)) {
+                $errors[] = "Last name is required.";
             }
             if (empty($email)) {
                 $errors[] = "Email is required.";
@@ -64,7 +69,10 @@ class Security {
             if (empty($password)) {
                 $errors[] = "Password is required.";
             }
-            if (empty($dateOfBirth)) {
+            if ($password !== $confirm_password) {
+                $errors[] = "Passwords do not match.";
+            }
+            if (empty($birthdate)) {
                 $errors[] = "Date of birth is required.";
             }
             if (empty($address)) {
@@ -76,12 +84,13 @@ class Security {
     
             if (empty($errors)) {
                 $user = new Users();
-                $user->setUsername($username);
-                $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
+                $user->setFirstname($firstname);
+                $user->setLastname($lastname);
                 $user->setEmail($email);
+                $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
                 $user->setToken(bin2hex(random_bytes(50)));
                 $user->setIsVerified(false);
-                $user->setDateOfBirth($dateOfBirth);
+                $user->setBirthdate($birthdate);
                 $user->setAddress($address);
                 $user->setPhone($phone);
                 $user->save();

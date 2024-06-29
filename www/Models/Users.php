@@ -9,7 +9,6 @@ use PDOException;
 class Users extends SQL
 {
     private ?int $id = null;
-    private string $username;
     private string $lastname;
     private string $firstname;
     private string $birthdate;
@@ -17,21 +16,18 @@ class Users extends SQL
     private string $password;
     private ?string $token = null;
     private bool $is_verified = false;
+    private ?string $address = null;
+    private ?string $phone = null;
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    // Getters
+    // Getters 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUsername(): string
-    {
-        return $this->username;
     }
 
     public function getLastname(): string
@@ -69,15 +65,20 @@ class Users extends SQL
         return $this->is_verified;
     }
 
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
     // Setters
     public function setId(int $id): void
     {
         $this->id = $id;
-    }
-
-    public function setUsername(string $username): void
-    {
-        $this->username = $username;
     }
 
     public function setLastname(string $lastname): void
@@ -115,51 +116,14 @@ class Users extends SQL
         $this->is_verified = $is_verified;
     }
 
-    // Save method and other methods remain the same as previously mentioned
-
-    // Save method for inserting or updating user in database
-    public function save(): bool
+    public function setAddress(?string $address): void
     {
-        try {
-            if (empty($this->id)) {
-                // Insert new user
-                $sql = "INSERT INTO chall_users (username, lastname, firstname, birthdate, email, password, token, is_verified) 
-                        VALUES (:username, :lastname, :firstname, :birthdate, :email, :password, :token, :is_verified)";
-            } else {
-                // Update existing user
-                $sql = "UPDATE chall_users SET username = :username, lastname = :lastname, firstname = :firstname, 
-                        birthdate = :birthdate, email = :email, password = :password, token = :token, is_verified = :is_verified 
-                        WHERE id = :id";
-            }
+        $this->address = $address;
+    }
 
-            $stmt = $this->pdo->prepare($sql);
-
-            // Bind parameters
-            $stmt->bindParam(':username', $this->username, PDO::PARAM_STR);
-            $stmt->bindParam(':lastname', $this->lastname, PDO::PARAM_STR);
-            $stmt->bindParam(':firstname', $this->firstname, PDO::PARAM_STR);
-            $stmt->bindParam(':birthdate', $this->birthdate, PDO::PARAM_STR);
-            $stmt->bindParam(':email', $this->email, PDO::PARAM_STR);
-            $stmt->bindParam(':password', $this->password, PDO::PARAM_STR);
-            $stmt->bindParam(':token', $this->token, PDO::PARAM_STR);
-            $stmt->bindParam(':is_verified', $this->is_verified, PDO::PARAM_BOOL);
-
-            if (!empty($this->id)) {
-                $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
-            }
-
-            $stmt->execute();
-
-            if (empty($this->id)) {
-                $this->id = $this->pdo->lastInsertId();
-            }
-
-            return true;
-        } catch (PDOException $e) {
-            die('SQL Error: ' . $e->getMessage());
-        }
-
-        return false;
+    public function setPhone(?string $phone): void
+    {
+        $this->phone = $phone;
     }
 
     // Find user by email
@@ -191,7 +155,6 @@ class Users extends SQL
     {
         $user = new self();
         $user->setId($data['id']);
-        $user->setUsername($data['username']);
         $user->setLastname($data['lastname']);
         $user->setFirstname($data['firstname']);
         $user->setBirthdate($data['birthdate']);
@@ -199,6 +162,8 @@ class Users extends SQL
         $user->setPassword($data['password']);
         $user->setToken($data['token']);
         $user->setIsVerified($data['is_verified']);
+        $user->setAddress($data['address']);
+        $user->setPhone($data['phone']);
         return $user;
     }
 }

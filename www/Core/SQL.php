@@ -10,14 +10,14 @@ class SQL
     private static $instance = null; // Static instance to hold the database connection
     protected $pdo;
     protected $table;
-    private $dbname = 'postgres';
+    private $dbname = 'postgres_db';
     private $id;
 
     public function __construct()
     {
         $this->connect();
         try {
-            $this->pdo = new PDO("pgsql:host=postgres;dbname=" . $this->dbname . ";port=5432", "postgres", "postgres");
+            $this->pdo = new PDO("pgsql:host=postgres_db;dbname=" . $this->dbname . ";port=5432", "postgres", "postgres");
         } catch (\Exception $e) {
             die("Erreur SQL : " . $e->getMessage());
         }
@@ -30,7 +30,7 @@ class SQL
     {
         if (self::$instance === null) {
             try {
-                self::$instance = new PDO("pgsql:host=postgres;dbname=" . $this->dbname . ";port=5432", "postgres", "postgres", [
+                self::$instance = new PDO("pgsql:host=postgres_db;dbname=" . $this->dbname . ";port=5432", "postgres", "postgres", [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 ]);

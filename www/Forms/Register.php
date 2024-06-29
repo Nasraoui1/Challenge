@@ -4,74 +4,60 @@ namespace App\Forms;
 
 class Register
 {
-
     public static function getConfig(): array
     {
         return [
             "config" => [
-                "action" => "",
                 "method" => "POST",
-                "submit" => "S'inscrire"
+                "action" => "/register",
+                "submit" => "Register"
             ],
             "inputs" => [
                 "firstname" => [
                     "type" => "text",
-                    "min" => 2,
-                    "max" => 50,
-                    "placeholder" => "Votre prénom",
-                    "required" => true,
-                    "error" => "Votre prénom doit faire entre 2 et 50 caractères",
-                    "class" => "form-control" // Add your CSS class here
+                    "placeholder" => "First Name",
+                    "required" => true
                 ],
                 "lastname" => [
                     "type" => "text",
-                    "min" => 2,
-                    "max" => 50,
-                    "placeholder" => "Votre nom",
-                    "required" => true,
-                    "error" => "Votre nom doit faire entre 2 et 50 caractères"
+                    "placeholder" => "Last Name",
+                    "required" => true
                 ],
                 "email" => [
                     "type" => "email",
-                    "min" => 8,
-                    "max" => 320,
-                    "placeholder" => "Votre email",
-                    "required" => true,
-                    "error" => "Votre email doit faire entre 8 et 320 caractères"
+                    "placeholder" => "Email",
+                    "required" => true
                 ],
                 "password" => [
                     "type" => "password",
-                    "placeholder" => "Votre mot de passe",
+                    "placeholder" => "Password",
                     "required" => true,
-                    "error" => "Votre mot de passe doit faire au minimum 8 caractères avec des lettres minuscules, majuscules et des chiffres"
+                    "min" => 8,
+                    "error" => "Password must be at least 8 characters long and include at least one number, one uppercase and one lowercase letter"
                 ],
                 "passwordConfirm" => [
                     "type" => "password",
-                    "placeholder" => "Confirmation",
+                    "placeholder" => "Confirm Password",
                     "required" => true,
                     "confirm" => "password",
-                    "error" => "La confirmation ne correspond pas"
+                    "error" => "Passwords do not match"
                 ],
                 "date_of_birth" => [
                     "type" => "date",
-                    "placeholder" => "Votre date de naissance",
-                    "required" => true,
-                    "error" => "Veuillez entrer une date de naissance valide"
+                    "placeholder" => "Date of Birth",
+                    "required" => true
                 ],
                 "address" => [
                     "type" => "text",
-                    "placeholder" => "Votre adresse",
-                    "required" => true,
-                    "error" => "Veuillez entrer votre adresse"
+                    "placeholder" => "Address",
+                    "required" => true
                 ],
                 "phone" => [
                     "type" => "text",
-                    "placeholder" => "Votre numéro de téléphone",
-                    "required" => true,
-                    "error" => "Veuillez entrer un numéro de téléphone valide"
-                ],
+                    "placeholder" => "Phone",
+                    "required" => true
+                ]
             ]
-
         ];
     }
 }
